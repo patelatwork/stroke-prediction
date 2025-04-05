@@ -499,30 +499,7 @@ with tab1:
                 st.write("### No major risk factors identified")
                 st.markdown("</div>", unsafe_allow_html=True)
             
-            # Display model contributions
-            st.markdown("<h4>Model Contributions</h4>", unsafe_allow_html=True)
-            model_names = list(trained_models.keys())
-            
-            # Create horizontal bar chart of model contributions
-            fig = px.bar(
-                x=model_contributions,
-                y=model_names,
-                orientation='h',
-                labels={'x': 'Contribution to Risk Score', 'y': 'Model'},
-                title='Model Contributions to Risk Assessment',
-                color=model_contributions,
-                color_continuous_scale='Blues'
-            )
-            fig.update_layout(
-                height=300,
-                margin=dict(l=20, r=20, t=40, b=20),
-                title_font=dict(size=18, color='#0D47A1'),
-                font=dict(size=14),
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)'
-            )
-            st.plotly_chart(fig, use_container_width=True)
-            
+           
         # Recommendations section
         st.markdown("<h3 class='sub-header'>Recommendations</h3>", unsafe_allow_html=True)
         
@@ -689,9 +666,9 @@ with tab3:
     The system utilizes a stacked ensemble approach that combines three powerful models:
     
     1. *Gradient Boosting Classifier*: Effective for handling complex relationships
-    2. *Random Forest*: Robust against overfitting and handles non-linear relationships
+    2. *XGboost*: XGBoost, which stands for Extreme Gradient Boosting, is a scalable, distributed gradient-boosted decision tree (GBDT) machine learning library
     3. *Logistic Regression*: Interpretable model that serves as a baseline
-    
+    4. *MLP Perceptron*:A Multilayer Perceptron (MLP) is a type of artificial neural network, a feedforward network,
     The predictions from these models are combined using a meta-model to produce the final risk assessment.
     
     ### Interpretation of Results
