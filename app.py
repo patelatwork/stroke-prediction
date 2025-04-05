@@ -24,42 +24,119 @@ st.set_page_config(
 st.markdown("""
 <style>
     .main-header {
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         color: #1E88E5;
         text-align: center;
+        font-weight: 600;
+        margin-bottom: 1rem;
     }
     .sub-header {
-        font-size: 1.5rem;
+        font-size: 1.7rem;
         color: #0D47A1;
+        border-bottom: 2px solid #1E88E5;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
     }
     .info-text {
         font-size: 1rem;
+        color: #555;
     }
     .risk-high {
-        font-size: 1.8rem;
+        font-size: 2rem;
         color: #D32F2F;
         font-weight: bold;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
     .risk-medium {
-        font-size: 1.8rem;
+        font-size: 2rem;
         color: #FF9800;
         font-weight: bold;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
     .risk-low {
-        font-size: 1.8rem;
+        font-size: 2rem;
         color: #4CAF50;
         font-weight: bold;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
     .stButton button {
         background-color: #1E88E5;
         color: white;
         font-weight: bold;
         border-radius: 10px;
-        padding: 10px 20px;
+        padding: 12px 24px;
         border: none;
+        font-size: 1.1rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
     }
     .stButton button:hover {
         background-color: #0D47A1;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        transform: translateY(-2px);
+    }
+    .symptom-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+    }
+    .symptom-group-title {
+        font-size: 1.3rem;
+        color: #0D47A1;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 0.5rem;
+    }
+    .checkbox-container label {
+        font-weight: 500;
+        color: #333;
+    }
+    .metric-card {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+    .metric-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #1E88E5;
+    }
+    .metric-label {
+        font-size: 1rem;
+        color: #555;
+    }
+    .recommendation-card {
+        background: #f1f8ff;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+    .footer {
+        border-top: 1px solid #ddd;
+        padding-top: 10px;
+        font-size: 0.9rem;
+        color: #666;
+        text-align: center;
+    }
+    .tab-content {
+        padding: 20px;
+    }
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        background-color: #f4f5f7;
+        border-radius: 6px 6px 0 0;
+        padding: 10px 20px;
+        font-weight: 500;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #1E88E5 !important;
+        color: white !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -248,41 +325,68 @@ with st.spinner("Loading data and training models... This might take a minute.")
 tab1, tab2, tab3 = st.tabs(["Prediction", "Data Insights", "About"])
 
 with tab1:
+    st.markdown("<div class='tab-content'>", unsafe_allow_html=True)
     st.markdown("<h3 class='sub-header'>Patient Information</h3>", unsafe_allow_html=True)
     
     # Create three columns for input layout
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
     
     with col1:
         # Basic information
+        st.markdown("<div class='symptom-card'>", unsafe_allow_html=True)
+        st.markdown("<h4 class='symptom-group-title'>Basic Information</h4>", unsafe_allow_html=True)
         age = st.number_input("Age", min_value=1, max_value=120, value=30)
         gender = st.selectbox("Gender", ["Male", "Female"])
-        
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    with col2:
+        # Empty space for layout balance
+        st.markdown("<div class='symptom-card' style='visibility: hidden;'>", unsafe_allow_html=True)
+        st.markdown("<h4 class='symptom-group-title'>Hidden</h4>", unsafe_allow_html=True)
+        st.write(" ")
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Symptom selection using checkboxes
+    st.markdown("<h3 class='sub-header'>Symptoms</h3>", unsafe_allow_html=True)
+    
+    # Create three columns for symptoms layout
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
         # Vital symptoms
-        st.markdown("<h4>Vital Symptoms</h4>", unsafe_allow_html=True)
-        high_blood_pressure = st.slider("High Blood Pressure", 0.0, 1.0, 0.0, 0.1)
-        irregular_heartbeat = st.slider("Irregular Heartbeat", 0.0, 1.0, 0.0, 0.1)
-        chest_pain = st.slider("Chest Pain", 0.0, 1.0, 0.0, 0.1)
-        shortness_of_breath = st.slider("Shortness of Breath", 0.0, 1.0, 0.0, 0.1)
-        chest_discomfort = st.slider("Chest Discomfort", 0.0, 1.0, 0.0, 0.1)
+        st.markdown("<div class='symptom-card'>", unsafe_allow_html=True)
+        st.markdown("<h4 class='symptom-group-title'>Vital Symptoms</h4>", unsafe_allow_html=True)
+        
+        high_blood_pressure = 1.0 if st.checkbox("High Blood Pressure") else 0.0
+        irregular_heartbeat = 1.0 if st.checkbox("Irregular Heartbeat") else 0.0
+        chest_pain = 1.0 if st.checkbox("Chest Pain") else 0.0
+        shortness_of_breath = 1.0 if st.checkbox("Shortness of Breath") else 0.0
+        chest_discomfort = 1.0 if st.checkbox("Chest Discomfort") else 0.0
+        st.markdown("</div>", unsafe_allow_html=True)
     
     with col2:
         # Secondary symptoms
-        st.markdown("<h4>Secondary Symptoms</h4>", unsafe_allow_html=True)
-        fatigue_weakness = st.slider("Fatigue/Weakness", 0.0, 1.0, 0.0, 0.1)
-        dizziness = st.slider("Dizziness", 0.0, 1.0, 0.0, 0.1)
-        swelling_edema = st.slider("Swelling/Edema", 0.0, 1.0, 0.0, 0.1)
-        neck_jaw_pain = st.slider("Neck/Jaw Pain", 0.0, 1.0, 0.0, 0.1)
-        excessive_sweating = st.slider("Excessive Sweating", 0.0, 1.0, 0.0, 0.1)
+        st.markdown("<div class='symptom-card'>", unsafe_allow_html=True)
+        st.markdown("<h4 class='symptom-group-title'>Secondary Symptoms</h4>", unsafe_allow_html=True)
+        
+        fatigue_weakness = 1.0 if st.checkbox("Fatigue/Weakness") else 0.0
+        dizziness = 1.0 if st.checkbox("Dizziness") else 0.0
+        swelling_edema = 1.0 if st.checkbox("Swelling/Edema") else 0.0
+        neck_jaw_pain = 1.0 if st.checkbox("Neck/Jaw Pain") else 0.0
+        excessive_sweating = 1.0 if st.checkbox("Excessive Sweating") else 0.0
+        st.markdown("</div>", unsafe_allow_html=True)
     
     with col3:
         # Other symptoms
-        st.markdown("<h4>Other Symptoms</h4>", unsafe_allow_html=True)
-        persistent_cough = st.slider("Persistent Cough", 0.0, 1.0, 0.0, 0.1)
-        nausea_vomiting = st.slider("Nausea/Vomiting", 0.0, 1.0, 0.0, 0.1)
-        cold_hands_feet = st.slider("Cold Hands/Feet", 0.0, 1.0, 0.0, 0.1)
-        snoring_sleep_apnea = st.slider("Snoring/Sleep Apnea", 0.0, 1.0, 0.0, 0.1)
-        anxiety_doom = st.slider("Anxiety/Feeling of Doom", 0.0, 1.0, 0.0, 0.1)
+        st.markdown("<div class='symptom-card'>", unsafe_allow_html=True)
+        st.markdown("<h4 class='symptom-group-title'>Other Symptoms</h4>", unsafe_allow_html=True)
+        
+        persistent_cough = 1.0 if st.checkbox("Persistent Cough") else 0.0
+        nausea_vomiting = 1.0 if st.checkbox("Nausea/Vomiting") else 0.0
+        cold_hands_feet = 1.0 if st.checkbox("Cold Hands/Feet") else 0.0
+        snoring_sleep_apnea = 1.0 if st.checkbox("Snoring/Sleep Apnea") else 0.0
+        anxiety_doom = 1.0 if st.checkbox("Anxiety/Feeling of Doom") else 0.0
+        st.markdown("</div>", unsafe_allow_html=True)
     
     # Predict button centered
     col1, col2, col3 = st.columns([1, 1, 1])
@@ -322,6 +426,7 @@ with tab1:
         )
         
         # Display results
+        st.markdown("<div class='result-container'>", unsafe_allow_html=True)
         col1, col2 = st.columns([1, 1])
         
         with col1:
@@ -332,14 +437,17 @@ with tab1:
                 mode="gauge+number",
                 value=risk_percentage,
                 domain={'x': [0, 1], 'y': [0, 1]},
-                title={'text': "Stroke Risk Percentage"},
+                title={'text': "Stroke Risk Percentage", 'font': {'size': 24, 'color': '#0D47A1'}},
                 gauge={
-                    'axis': {'range': [None, 100]},
+                    'axis': {'range': [None, 100], 'tickwidth': 1, 'tickcolor': "darkblue"},
                     'bar': {'color': "darkblue"},
+                    'bgcolor': "white",
+                    'borderwidth': 2,
+                    'bordercolor': "gray",
                     'steps': [
-                        {'range': [0, 30], 'color': "green"},
-                        {'range': [30, 70], 'color': "orange"},
-                        {'range': [70, 100], 'color': "red"}
+                        {'range': [0, 30], 'color': "#4CAF50", 'thickness': 0.75},
+                        {'range': [30, 70], 'color': "#FF9800", 'thickness': 0.75},
+                        {'range': [70, 100], 'color': "#D32F2F", 'thickness': 0.75}
                     ],
                     'threshold': {
                         'line': {'color': "red", 'width': 4},
@@ -349,7 +457,12 @@ with tab1:
                 }
             ))
             
-            fig.update_layout(height=300)
+            fig.update_layout(
+                height=350,
+                margin=dict(l=30, r=30, t=50, b=30),
+                paper_bgcolor="white",
+                font={'color': "#555", 'family': "Arial"}
+            )
             st.plotly_chart(fig, use_container_width=True)
             
             # Display risk category
@@ -377,11 +490,15 @@ with tab1:
             if age >= 65: risk_factors.append(("Advanced Age", 1.0))
             
             if risk_factors:
-                st.write("Major risk factors identified:")
+                st.markdown("<div class='recommendation-card'>", unsafe_allow_html=True)
+                st.write("### Major risk factors identified:")
                 for factor, value in sorted(risk_factors, key=lambda x: x[1], reverse=True):
-                    st.write(f"• {factor} ({value*100:.0f}%)")
+                    st.write(f"• **{factor}**")
+                st.markdown("</div>", unsafe_allow_html=True)
             else:
-                st.write("No major risk factors identified.")
+                st.markdown("<div class='recommendation-card' style='background-color: #e8f5e9;'>", unsafe_allow_html=True)
+                st.write("### No major risk factors identified")
+                st.markdown("</div>", unsafe_allow_html=True)
             
             # Display model contributions
             st.markdown("<h4>Model Contributions</h4>", unsafe_allow_html=True)
@@ -397,7 +514,14 @@ with tab1:
                 color=model_contributions,
                 color_continuous_scale='Blues'
             )
-            fig.update_layout(height=300)
+            fig.update_layout(
+                height=300,
+                margin=dict(l=20, r=20, t=40, b=20),
+                title_font=dict(size=18, color='#0D47A1'),
+                font=dict(size=14),
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)'
+            )
             st.plotly_chart(fig, use_container_width=True)
             
         # Recommendations section
@@ -415,43 +539,65 @@ with tab1:
             risk_specific_recommendations.append("Monitor blood pressure regularly and follow medical advice for management")
         if irregular_heartbeat >= 0.5:
             risk_specific_recommendations.append("Consult a cardiologist for evaluation and management of arrhythmia")
-        if chest_pain >= 0.3 or chest_discomfort >= 0.3:
+        if chest_pain >= 0.5 or chest_discomfort >= 0.5:
             risk_specific_recommendations.append("Seek immediate medical attention for chest pain or discomfort")
         if age >= 65:
             risk_specific_recommendations.append("Schedule regular check-ups with healthcare providers")
         
         col1, col2 = st.columns(2)
         with col1:
+            st.markdown("<div class='recommendation-card'>", unsafe_allow_html=True)
             st.subheader("General Health Recommendations")
             for rec in general_recommendations:
                 st.write(f"• {rec}")
+            st.markdown("</div>", unsafe_allow_html=True)
                 
         with col2:
+            st.markdown("<div class='recommendation-card'>", unsafe_allow_html=True)
             st.subheader("Risk-Specific Recommendations")
             if risk_specific_recommendations:
                 for rec in risk_specific_recommendations:
                     st.write(f"• {rec}")
             else:
                 st.write("No specific recommendations based on risk factors.")
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    st.markdown("</div>", unsafe_allow_html=True)
 
 with tab2:
+    st.markdown("<div class='tab-content'>", unsafe_allow_html=True)
     st.markdown("<h3 class='sub-header'>Data Insights</h3>", unsafe_allow_html=True)
     
-    # Key statistics
+    # Key statistics with improved styling
+    st.markdown("<div class='symptom-card'>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
     with col1:
         total_cases = len(df)
-        st.metric("Total Cases", f"{total_cases:,}")
+        st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-value'>{total_cases:,}</div>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-label'>Total Cases</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
     
     with col2:
         high_risk_cases = df['at_risk'].sum()
-        st.metric("High Risk Cases", f"{high_risk_cases:,}")
+        st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-value'>{high_risk_cases:,}</div>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-label'>High Risk Cases</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
     
     with col3:
         risk_percentage = (high_risk_cases / total_cases) * 100
-        st.metric("Percentage at High Risk", f"{risk_percentage:.1f}%")
+        st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
+        st.markdown(f"<div class='metric-value'>{risk_percentage:.1f}%</div>", unsafe_allow_html=True)
+        st.markdown("<div class='metric-label'>Percentage at High Risk</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
     
+    # Keep the rest of tab2 content mostly unchanged
     # Distribution by gender
+    st.markdown("<div class='symptom-card'>", unsafe_allow_html=True)
     st.subheader("Risk Distribution by Gender")
     try:
         gender_risk = df.groupby(['gender', 'at_risk']).size().unstack()
@@ -463,12 +609,19 @@ with tab2:
             title="Risk Distribution by Gender",
             color_discrete_sequence=['#4CAF50', '#D32F2F']
         )
-        fig.update_layout(height=400)
+        fig.update_layout(
+            height=400,
+            title_font=dict(size=20),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)'
+        )
         st.plotly_chart(fig, use_container_width=True)
     except:
         st.error("Unable to create gender distribution chart. There might be an issue with the data structure.")
+    st.markdown("</div>", unsafe_allow_html=True)
     
     # Age vs Risk
+    st.markdown("<div class='symptom-card'>", unsafe_allow_html=True)
     st.subheader("Age vs Stroke Risk")
     
     try:
@@ -479,12 +632,19 @@ with tab2:
             title="Age vs Stroke Risk",
             labels={'age': 'Age', 'stroke_risk_percentage': 'Risk Percentage', 'at_risk': 'High Risk'}
         )
-        fig.update_layout(height=400)
+        fig.update_layout(
+            height=400,
+            title_font=dict(size=20),
+            plot_bgcolor='rgba(0,0,0,0.02)',
+            paper_bgcolor='rgba(0,0,0,0)'
+        )
         st.plotly_chart(fig, use_container_width=True)
     except:
         st.error("Unable to create age vs risk chart. There might be an issue with the data structure.")
+    st.markdown("</div>", unsafe_allow_html=True)
     
     # Correlation heatmap
+    st.markdown("<div class='symptom-card'>", unsafe_allow_html=True)
     st.subheader("Symptom Correlation Analysis")
     
     try:
@@ -498,14 +658,22 @@ with tab2:
             color_continuous_scale='RdBu_r',
             zmin=-1, zmax=1
         )
-        fig.update_layout(height=600)
+        fig.update_layout(
+            height=600,
+            title_font=dict(size=20),
+            paper_bgcolor='rgba(0,0,0,0)'
+        )
         st.plotly_chart(fig, use_container_width=True)
     except:
         st.error("Unable to create correlation heatmap. There might be an issue with the data structure.")
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
 with tab3:
+    st.markdown("<div class='tab-content'>", unsafe_allow_html=True)
     st.markdown("<h3 class='sub-header'>About the Stroke Risk Prediction System</h3>", unsafe_allow_html=True)
     
+    st.markdown("<div class='symptom-card'>", unsafe_allow_html=True)
     st.markdown("""
     This application uses machine learning to predict the risk of stroke based on patient information and symptoms. 
     The system employs a stacked ensemble model that combines multiple ML algorithms to provide accurate predictions.
@@ -538,9 +706,11 @@ with tab3:
     This tool is for informational purposes only and does not constitute medical advice. 
     Always consult with qualified healthcare providers for diagnosis and treatment decisions.
     """)
+    st.markdown("</div>", unsafe_allow_html=True)
     
     st.markdown("---")
-    st.markdown("© 2023 Stroke Risk Prediction System | All Rights Reserved")
+    st.markdown("<div class='footer'>© 2025 Stroke Risk Prediction System | All Rights Reserved |Created By Dhruv Patel && Aadi Patel</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # Add footer
 st.markdown("---")
