@@ -65,9 +65,7 @@ streamlit run app.py
 <details>
 <summary>Click to view screenshots</summary>
 
-![Main Interface](path_to_main_interface.png)
-![Predictions](path_to_predictions.png)
-![Analytics](path_to_analytics.png)
+![image](https://github.com/user-attachments/assets/e43c9c38-0b56-42ff-b699-0084812fde10)
 
 </details>
 
