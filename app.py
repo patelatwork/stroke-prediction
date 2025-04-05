@@ -493,8 +493,7 @@ with tab1:
                 st.markdown("<div class='recommendation-card'>", unsafe_allow_html=True)
                 st.write("### Major risk factors identified:")
                 for factor, value in sorted(risk_factors, key=lambda x: x[1], reverse=True):
-                    st.write(f"• *{factor}*")
-                st.markdown("</div>", unsafe_allow_html=True)
+                    st.write(f"• {factor} ({value*100:.0f}%)")
             else:
                 st.markdown("<div class='recommendation-card' style='background-color: #e8f5e9;'>", unsafe_allow_html=True)
                 st.write("### No major risk factors identified")
